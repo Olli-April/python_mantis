@@ -1,12 +1,16 @@
+from model.project import Project
 import random
 
-def test_delete_project(app, db, json_project):
-    app.session.login("administrator", "root")
-    app.project.open_manage_project_page()
+def test_delete_project(app, db):
+    app.session.login(username="administrator", password="root")
     if len(db.get_project_list()) == 0:
-        app.project.create_new_project(json_project)
-    old_project = db.get_project_list()
-    project = random.choice(old_project)
-    app.project.delete_project_by_name(project.name)
-    new_project = db.get_project_list()
-    assert len(old_project) - 1 == len(new_project) 
+        app.project.create_new_project(Project(name="new", description="description",
+                                               status="development", view_state="public"))
+    old_project_list = db.get_project_list()
+    project_delete = random.choice(old_project_list)
+    app.project.delete_project_by_name(project_delete.name)
+    new_project_list = db.get_project_list()
+    app.session.logout()
+    old_project_list.remove(project_delete)
+    assert old_project_list == new_project_list
+    assert sorted(old_project_list, key=Project.id_or_max) == sorted(new_project_list, key=Project.id_or_max)

@@ -42,6 +42,7 @@ class ProjectHelper:
 
     def delete_project_by_name(self, name):
         wd = self.app.wd
+        self.open_manage_project_page()
         wd.find_element_by_link_text(name).click()
         self.open_delete_project_page()
         self.open_delete_project_page()
